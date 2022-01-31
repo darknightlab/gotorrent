@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+        <meta name="renderer" content="webkit" />
+        <meta name="force-rendering" content="webkit" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+        <title>lili.ac</title>
+
+        <!-- MDUI CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@1.0.2/dist/css/mdui.min.css" />
+
+        <!-- github-markdown-css -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@latest/github-markdown.min.css" />
+
+        <!-- FontAwesome CSS -->
+        <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+
+        <!-- JQuery -->
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+        <!-- WebTorrent -->
+        <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-6NV7WFPHNF"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+
+            gtag("config", "G-6NV7WFPHNF");
+        </script>
+
+        <style type="text/css">
+            .mdui-collapse-item-body .mdui-list-item {
+                padding-left: 36px !important;
+            }
+            .mdui-menu-item > a {
+                display: grid !important;
+            }
+            .mdui-drawer .mdui-menu {
+                left: 10px !important;
+            }
+            .markdown-body {
+                --color-accent-fg: #4caf50;
+                --color-accent-emphasis: #4caf50;
+            }
+        </style>
+    </head>
+    <body class="mdui-theme-primary-green mdui-theme-accent-blue mdui-theme-layout-auto mdui-appbar-with-toolbar">
+        <div id="left-drawer" class="mdui-drawer mdui-drawer-close" style="will-change: unset">
+            <div class="mdui-list" mdui-collapse="{accordion: true}">
+                <div class="mdui-collapse-item">
+                    <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                        <div class="mdui-list-item-content">当前种子信息</div>
+                        <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                    </div>
+                    <ul class="mdui-collapse-item-body mdui-list">
+                        <li class="mdui-list-item mdui-ripple">
+                            <i class="mdui-icon material-icons">file_download</i>
+                            <div id="download-info" class="mdui-m-x-1">0.00M/s (0.00G)</div>
+                        </li>
+                        <li class="mdui-list-item mdui-ripple">
+                            <i class="mdui-icon material-icons">file_upload</i>
+                            <div id="upload-info" class="mdui-m-x-1">0.00M/s (0.00G)</div>
+                        </li>
+                        <li class="mdui-list-item mdui-ripple" mdui-menu="{target: '#peer-ip'}">
+                            <i class="mdui-icon material-icons">desktop_windows</i>
+                            <div id="peer-info" class="mdui-m-x-1">0</div>
+                        </li>
+                        <ul class="mdui-menu" id="peer-ip" style="max-height: 40vh; overflow-y: auto"></ul>
+                        <li class="mdui-list-item mdui-ripple" mdui-menu="{target: '#torrent-opreator'}">
+                            <i class="mdui-icon material-icons">check</i>
+                            <div id="progress-info" class="mdui-m-x-1">0.00</div>
+                        </li>
+                        <ul class="mdui-menu" id="torrent-opreator">
+                            <li class="mdui-menu-item">
+                                <a id="delete-torrent" class="mdui-ripple">删除种子</a>
+                            </li>
+                        </ul>
+                    </ul>
+                </div>
+                <div class="mdui-collapse-item">
+                    <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                        <div class="mdui-list-item-content">高级功能</div>
+                        <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                    </div>
+                    <ul class="mdui-collapse-item-body mdui-list">
+                        <li id="enable-webseed" class="mdui-list-item mdui-ripple">启用webseed</li>
+                        <li id="disable-webseed" class="mdui-list-item mdui-ripple">禁用webseed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mdui-appbar mdui-appbar-fixed">
+            <div class="mdui-toolbar mdui-color-theme">
+                <a class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#left-drawer'}">
+                    <i class="mdui-icon material-icons">menu</i>
+                </a>
+                <a href="https://www.lili.ac" class="mdui-typo-headline">lili.ac</a>
+                <div class="mdui-toolbar-spacer"></div>
+                <div class="mdui-textfield mdui-textfield-expandable mdui-float-right" style="max-width: 40%">
+                    <button id="uri-button" class="mdui-textfield-icon mdui-btn mdui-btn-icon">
+                        <i class="mdui-icon material-icons">link</i>
+                    </button>
+                    <input id="uri" class="mdui-textfield-input" type="text" placeholder="" />
+                    <button class="mdui-textfield-close mdui-btn mdui-btn-icon">
+                        <i class="mdui-icon material-icons">close</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mdui-container mdui-m-y-2">
+            <!-- <div class="mdui-container-fluid mdui-m-y-2 mdui-m-x-5"> -->
+            <!-- <div id="video-title" class="mdui-typo-title mdui-m-x-1"></div> -->
+            <div class="mdui-divider mdui-m-x-1"></div>
+            <div class="mdui-row">
+                <!-- 左边 -->
+                <div class="mdui-col-xs-12 mdui-col-md-8 mdui-m-y-1">
+                    <!-- 种子列表 -->
+                    <div id="torrent-area" class="mdui-grid-tile mdui-p-a-1">
+                        <div class="mdui-card">
+                            <ul class="mdui-list" style="overflow: auto; max-height: 80vh"></ul>
+                        </div>
+                    </div>
+
+                    <!-- 其他文件 -->
+                    <div id="other-area" class="mdui-grid-tile mdui-p-a-1 mdui-hidden">
+                        <div id="other-file" class="mdui-card" style="overflow: auto; max-height: 100vh"></div>
+                    </div>
+
+                    <!-- 介绍 -->
+                    <div id="introduce-area" class="mdui-grid-tile mdui-p-a-1">
+                        <!-- <div id="introduce-content" class="markdown-body mdui-p-a-4 mdui-card" style="border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px"></div> -->
+                        <div id="introduce-content" class="markdown-body mdui-p-a-3 mdui-card"></div>
+                    </div>
+                </div>
+
+                <!-- 右边 -->
+                <div class="mdui-col-xs-12 mdui-col-md-4 mdui-m-y-1">
+                    <!-- 操作列表 -->
+                    <div id="operate-area" class="mdui-grid-tile mdui-p-a-1 mdui-hidden">
+                        <div class="mdui-card">
+                            <ul class="mdui-list" id="operate-list" style="overflow: auto; max-height: 40vh"></ul>
+                        </div>
+                    </div>
+
+                    <div class="mdui-divider mdui-m-x-1"></div>
+
+                    <!-- 日志 -->
+                    <div class="mdui-grid-tile mdui-p-a-1">
+                        <div class="mdui-card mdui-p-x-1" style="overflow: auto; min-height: 10vh; max-height: 28vh">
+                            <div id="log">
+                                <p>日志:</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 隐藏区域 -->
+        <div id="introduce-markdown" class="mdui-hidden" mdtarget="#introduce-content" mdsource="https://files.dnlab.net/www.lili.ac/assets/md/index.md?version=202201310057"></div>
+
+        <!-- MDUI JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.2/dist/js/mdui.min.js"></script>
+
+        <!-- markdown-it js -->
+        <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.3.2/dist/markdown-it.min.js"></script>
+
+        <!-- lili.js -->
+        <script src="https://files.dnlab.net/www.lili.ac/assets/js/lili.js?version=202201310057"></script>
+        <!-- <script src="./assets/js/lili.js"></script> -->
+    </body>
+</html>

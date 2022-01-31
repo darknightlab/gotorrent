@@ -1,0 +1,6 @@
+.vscode/
+cache/
+download/
+gotorrent
+*.exe
+config.yaml
