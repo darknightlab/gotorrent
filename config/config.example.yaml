@@ -20,6 +20,8 @@ Engine:
     PublicIp6:
 Main:
     CacheDir: cache
+    GotInfoTimeout: 60 # 0为不限制, 单位秒
+    MaxSeedTime: 0 # 0为不限制, 单位秒
     SequentialDownload: false
     CachePrefix: __AUTOSAVED__
     DefaultTracker:

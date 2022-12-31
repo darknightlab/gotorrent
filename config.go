@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"time"
 
 	"github.com/anacrolix/torrent"
 	"github.com/darknightlab/gotorrent/common"
@@ -17,6 +18,8 @@ type WebConfig struct {
 
 type MainConfig struct {
 	CacheDir           string     `yaml:"CacheDir"`
+	MaxSeedTime        int        `yaml:"MaxSeedTime"`
+	GotInfoTimeout     int        `yaml:"GotInfoTimeout"`
 	SequentialDownload bool       `yaml:"SequentialDownload"`
 	CachePrefix        string     `yaml:"CachePrefix"`
 	DefaultTracker     [][]string `yaml:"DefaultTracker"`
@@ -48,7 +51,8 @@ type Client struct {
 	Web    *iris.Application
 	Config Config
 	Queue  struct {
-		GotInfo map[string]*torrent.Torrent
+		GotInfo    map[string]*torrent.Torrent
+		WaitDelete map[string]*time.Timer
 	}
 }
 

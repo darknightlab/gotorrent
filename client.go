@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
@@ -156,6 +157,16 @@ func (cl *Client) AddTorrentFromFile(file io.Reader) (*torrent.Torrent, error) {
 	if err != nil {
 		return nil, err
 	}
+	// 设置定时删除
+	if cl.Config.Main.MaxSeedTime > 0 {
+		if cl.Queue.WaitDelete[torr.InfoHash().String()] != nil {
+			cl.Queue.WaitDelete[torr.InfoHash().String()].Reset(time.Second * time.Duration(cl.Config.Main.MaxSeedTime))
+		} else {
+			cl.Queue.WaitDelete[torr.InfoHash().String()] = time.AfterFunc(time.Second*time.Duration(cl.Config.Main.MaxSeedTime), func() {
+				cl.DeleteTorrent(torr.InfoHash().String(), true)
+			})
+		}
+	}
 	return torr, nil
 }
 
@@ -258,6 +269,7 @@ func New(cfg Config) (client *Client) {
 	// client.Config.CacheDir, _ = filepath.Abs(client.Config.CacheDir)
 	// client.Config.Engine.DataDir, _ = filepath.Abs(client.Config.Engine.DataDir)
 	client.Queue.GotInfo = map[string]*torrent.Torrent{}
+	client.Queue.WaitDelete = map[string]*time.Timer{}
 
 	{
 		d, err := os.Stat(client.Config.Main.CacheDir)
@@ -368,6 +380,17 @@ func (cl *Client) WebAddURI(ctx iris.Context) {
 			common.UserPanic(err.Error())
 			return
 		}
+		// 设置定时删除
+		if cl.Config.Main.MaxSeedTime > 0 {
+			if cl.Queue.WaitDelete[torr.InfoHash().String()] != nil {
+				cl.Queue.WaitDelete[torr.InfoHash().String()].Reset(time.Second * time.Duration(cl.Config.Main.MaxSeedTime))
+			} else {
+				cl.Queue.WaitDelete[torr.InfoHash().String()] = time.AfterFunc(time.Second*time.Duration(cl.Config.Main.MaxSeedTime), func() {
+					cl.DeleteTorrent(torr.InfoHash().String(), true)
+				})
+			}
+		}
+
 	} else {
 		resp, err := http.Get(recv.URI)
 		if err != nil {
@@ -386,11 +409,14 @@ func (cl *Client) WebAddURI(ctx iris.Context) {
 	common.ClientInfo(fmt.Sprintf("receive uri: %s", recv.URI))
 
 	cl.Queue.GotInfo[torr.InfoHash().String()] = torr
-	<-torr.GotInfo()
+	select {
+	case <-torr.GotInfo():
+		cl.DownloadTorrent(torr)
+		ctx.JSON(map[string]interface{}{"response": 200, "magnet": GetMagnet(torr)})
+	case <-time.After(time.Second * time.Duration(cl.Config.Main.GotInfoTimeout)):
+		ctx.JSON(map[string]interface{}{"response": 500, "magnet": GetMagnet(torr)})
+	}
 	delete(cl.Queue.GotInfo, torr.InfoHash().String())
-
-	cl.DownloadTorrent(torr)
-	ctx.JSON(map[string]interface{}{"response": 200, "magnet": GetMagnet(torr)})
 }
 
 func (cl *Client) WebAddTorrentFromFile(ctx iris.Context) {
