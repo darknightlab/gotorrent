@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+    gotorrent:
+        image: darknightlab/gotorrent:latest
+        # build: .
+        container_name: gotorrent
+        restart: always
+        network_mode: host
+        volumes:
+          - ./config:/app/config
+          - ./cache:/app/cache
+          - ./downloads:/app/downloads

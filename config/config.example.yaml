@@ -1,0 +1,30 @@
+Web:
+    Port: 16100
+    Address:
+    Secret:
+Engine:
+    # 必须大于16384
+    DownloadRateBurst: 209715200
+    DownloadRateLimit: 104857600
+    UploadRateBurst: 62914560
+    UploadRateLimit: 41943040
+    ListenPort: 16101
+    UpnpID: github.com/darknightlab/gotorrent (0.0.9)
+    ExtendedHandshakeClientVersion: github.com/darknightlab/gotorrent (0.0.9)
+    Bep20: -qB4500-
+    DataDir: downloads
+    Seed: true
+    HTTPUserAgent: qBittorrent/4.5.0
+    DisableIPv6:
+    PublicIp4:
+    PublicIp6:
+Main:
+    CacheDir: cache
+    SequentialDownload: false
+    CachePrefix: __AUTOSAVED__
+    DefaultTracker:
+        - ["udp://tracker.opentrackr.org:1337/announce"]
+        - ["https://tracker.lilithraws.org:443/announce"]
+        - ["wss://tracker.lili.ac"]
+        - ["wss://tracker.btorrent.xyz"]
+        - ["wss://tracker.openwebtorrent.com"]

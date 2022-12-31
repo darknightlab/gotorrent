@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	configPath string = "config.yaml"
+	configPath string = "config/config.yaml"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 	// 	Secret  string
 	// }{
 	// 	Port:    16100,
-	// 	Secret:  "canoziia",
+	// 	Secret:  "",
 	// 	Address: "",
 	// }
 	cfg.Engine = torrent.NewDefaultClientConfig()

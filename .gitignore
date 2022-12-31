@@ -2,6 +2,7 @@
 cache/
 download/
 html/
+build/
 gotorrent
 *.exe
-config.yaml
+**/config.yaml
