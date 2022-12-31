@@ -1,4 +1,4 @@
-sg1-server.darknight.tech {
+example.com {
     @cors_preflight method OPTIONS
     handle @cors_preflight {
         header Access-Control-Allow-Origin "*"
