@@ -165,6 +165,22 @@ func (cl *Client) DownloadTorrent(torr *torrent.Torrent) {
 	cl.NewTorrentCache(torr)
 	torr.DownloadAll()
 
+	// 大于8M优先下载前后部分，方便读出视频时长
+	pieceLength := torr.Info().PieceLength
+	var minFileSize int64 = 16777216
+	for i := 0; i < len(torr.Files()); i++ {
+		file := torr.Files()[i]
+		if file.Length() > minFileSize {
+			begin := file.BeginPieceIndex()
+			end := file.EndPieceIndex()
+			n := int(minFileSize / 2 / pieceLength) // 潜在的不安全行为：int64->int
+			for p := 0; p < n; p++ {
+				torr.Piece(begin + p).SetPriority(torrent.PiecePriorityNow)
+				torr.Piece(end - 1 - p).SetPriority(torrent.PiecePriorityNow)
+			}
+		}
+	}
+
 	if cl.Config.Main.SequentialDownload {
 		go func() {
 			r := torr.NewReader()
