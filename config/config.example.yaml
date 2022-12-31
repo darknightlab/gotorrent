@@ -9,8 +9,8 @@ Engine:
     UploadRateBurst: 62914560
     UploadRateLimit: 41943040
     ListenPort: 16101
-    UpnpID: github.com/darknightlab/gotorrent (0.0.9)
-    ExtendedHandshakeClientVersion: github.com/darknightlab/gotorrent (0.0.9)
+    UpnpID: github.com/darknightlab/gotorrent (0.0.11)
+    ExtendedHandshakeClientVersion: github.com/darknightlab/gotorrent (0.0.11)
     Bep20: -qB4500-
     DataDir: downloads
     Seed: true

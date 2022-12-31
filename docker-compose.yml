@@ -11,3 +11,13 @@ services:
           - ./config:/app/config
           - ./cache:/app/cache
           - ./downloads:/app/downloads
+    
+    caddy:
+        image: slothcroissant/caddy-cloudflaredns:latest
+        container_name: gotorrent-web
+        restart: always
+        network_mode: host
+        volumes:
+          - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+          - ./caddy/data:/data
+          - ./caddy/config:/config

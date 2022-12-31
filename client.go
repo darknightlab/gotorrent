@@ -310,8 +310,8 @@ func New(cfg Config) (client *Client) {
 	}
 	client.Web.Use(crs)
 
-	client.Web.HandleDir("/", "./html")
 	client.Web.HandleDir("/webseed/", cfg.Engine.DataDir)
+	client.Web.HandleDir("/", "./html")
 	api := client.Web.Party("/api")
 	{
 		add := api.Party("/add")

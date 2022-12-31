@@ -1,8 +1,9 @@
 .vscode/
 cache/
-download/
+downloads/
 html/
 build/
 gotorrent
 *.exe
 **/config.yaml
+**/Caddyfile
