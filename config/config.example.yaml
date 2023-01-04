@@ -1,5 +1,5 @@
 Web:
-    Port: 16100
+    Port: 16102
     Address:
     Secret:
 Engine:
@@ -8,7 +8,7 @@ Engine:
     DownloadRateLimit: 104857600
     UploadRateBurst: 62914560
     UploadRateLimit: 41943040
-    ListenPort: 16101
+    ListenPort: 16103
     UpnpID: github.com/darknightlab/gotorrent (0.0.11)
     ExtendedHandshakeClientVersion: github.com/darknightlab/gotorrent (0.0.11)
     Bep20: -qB4500-

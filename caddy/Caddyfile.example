@@ -1,3 +1,7 @@
+{
+    http_port 16100
+    https_port 16101
+}
 example.com {
     @cors_preflight method OPTIONS
     handle @cors_preflight {

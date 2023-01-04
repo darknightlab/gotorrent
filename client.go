@@ -288,6 +288,7 @@ func New(cfg Config) (client *Client) {
 
 	client.Engine, _ = torrent.NewClient(client.Config.Engine)
 
+	common.ClientInfo("try to recover torrents from cache")
 	client.Recover()
 
 	client.Web = iris.New()
