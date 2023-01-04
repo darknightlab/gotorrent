@@ -4,6 +4,8 @@ import (
 	"net"
 
 	"github.com/anacrolix/torrent"
+	"github.com/anacrolix/torrent/storage"
+	"github.com/darknightlab/gotorrent/common"
 	"golang.org/x/time/rate"
 )
 
@@ -15,7 +17,6 @@ func main() {
 	var cfile ConfigFile
 	ParseConfig(configPath, &cfile)
 	var cfg Config
-	cfg.Web = cfile.Web
 	// cfg.Web = struct {
 	// 	Port    int
 	// 	Address string
@@ -25,6 +26,14 @@ func main() {
 	// 	Secret:  "",
 	// 	Address: "",
 	// }
+	cfg.Web = cfile.Web
+	// cfg.Main.CacheDir = cfile.Main.CacheDir
+	// cfg.Main.MaxSeedTime = cfile.Main.MaxSeedTime
+	// cfg.Main.GotInfoTimeout = cfile.Main.GotInfoTimeout
+	// cfg.Main.SequentialDownload = cfile.Main.SequentialDownload
+	// cfg.Main.CachePrefix = cfile.Main.CachePrefix
+	// cfg.Main.DefaultTracker = cfile.Main.DefaultTracker
+	cfg.Main = cfile.Main
 	cfg.Engine = torrent.NewDefaultClientConfig()
 
 	if cfile.Engine.DownloadRateLimit < 0 {
@@ -47,13 +56,12 @@ func main() {
 	cfg.Engine.DisableIPv6 = cfile.Engine.DisableIPv6
 	cfg.Engine.PublicIp4 = net.ParseIP(cfile.Engine.PublicIp4)
 	cfg.Engine.PublicIp6 = net.ParseIP(cfile.Engine.PublicIp6)
-	// cfg.Main.CacheDir = cfile.Main.CacheDir
-	// cfg.Main.MaxSeedTime = cfile.Main.MaxSeedTime
-	// cfg.Main.GotInfoTimeout = cfile.Main.GotInfoTimeout
-	// cfg.Main.SequentialDownload = cfile.Main.SequentialDownload
-	// cfg.Main.CachePrefix = cfile.Main.CachePrefix
-	// cfg.Main.DefaultTracker = cfile.Main.DefaultTracker
-	cfg.Main = cfile.Main
+	// set default storage, saving sqlite in cache dir
+	pc, err := storage.NewDefaultPieceCompletionForDir(cfg.Main.CacheDir)
+	if err != nil {
+		common.ClientPanic(err)
+	}
+	cfg.Engine.DefaultStorage = storage.NewFileWithCompletion(cfile.Engine.DataDir, pc)
 	cl := New(cfg)
 	cl.Listen()
 }

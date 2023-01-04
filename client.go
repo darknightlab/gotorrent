@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/anacrolix/torrent"
@@ -133,7 +134,7 @@ func (cl *Client) NewTorrentCache(t *torrent.Torrent) {
 func (cl *Client) Recover() {
 	d, _ := ioutil.ReadDir(cl.Config.Main.CacheDir)
 	for _, f := range d {
-		if !f.IsDir() {
+		if !f.IsDir() && strings.HasPrefix(f.Name(), cl.Config.Main.CachePrefix) {
 			torr, err := cl.Engine.AddTorrentFromFile(filepath.Join(cl.Config.Main.CacheDir, f.Name()))
 			if err != nil {
 				common.ClientError(fmt.Errorf("add %s", f.Name()))
