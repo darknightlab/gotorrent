@@ -80,6 +80,7 @@ jobs:
               uses: docker/build-push-action@master
               with:
                   context: .
+                  platforms: linux/amd64,linux/arm64
                   push: ${{ github.event_name != 'pull_request' }}
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
@@ -97,4 +98,4 @@ jobs:
                   COSIGN_EXPERIMENTAL: "true"
               # This step uses the identity token to provision an ephemeral certificate
               # against the sigstore community Fulcio instance.
-              run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
+              run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign --yes {}@${{ steps.build-and-push.outputs.digest }}
