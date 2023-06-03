@@ -144,7 +144,7 @@ func (cl *Client) Recover() {
 	d, _ := ioutil.ReadDir(cl.Config.Main.CacheDir)
 	for _, f := range d {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), cl.Config.Main.CachePrefix) {
-			torr, err := cl.Engine.AddTorrentFromFile(filepath.Join(cl.Config.Main.CacheDir, f.Name()))
+			torr, err := cl.AddTorrentFromFilePath(filepath.Join(cl.Config.Main.CacheDir, f.Name()))
 			if err != nil {
 				common.ClientError(fmt.Errorf("add %s", f.Name()))
 				continue
@@ -180,6 +180,20 @@ func (cl *Client) AddTorrentFromMagnet(uri string) (torr *torrent.Torrent, err e
 	// 设置定时删除
 	cl.SetScheduledDeletion(torr)
 	return
+}
+
+func (cl *Client) AddTorrentFromFilePath(filename string) (*torrent.Torrent, error) {
+	m, err := metainfo.LoadFromFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	torr, err := cl.Engine.AddTorrent(m)
+	if err != nil {
+		return nil, err
+	}
+	// 设置定时删除
+	cl.SetScheduledDeletion(torr)
+	return torr, nil
 }
 
 func (cl *Client) AddTorrentFromFile(file io.Reader) (*torrent.Torrent, error) {
