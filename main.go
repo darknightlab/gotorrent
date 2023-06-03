@@ -60,7 +60,11 @@ func main() {
 	} else {
 		cfg.Engine.ExtendedHandshakeClientVersion = cfile.Engine.ExtendedHandshakeClientVersion
 	}
-	cfg.Engine.Bep20 = cfile.Engine.Bep20
+	if cfile.Engine.Bep20 == "" {
+		cfg.Engine.Bep20 = common.PeerIDPrefix
+	} else {
+		cfg.Engine.Bep20 = cfile.Engine.Bep20
+	}
 	cfg.Engine.DataDir = cfile.Engine.DataDir
 	cfg.Engine.Seed = cfile.Engine.Seed
 	cfg.Engine.HTTPUserAgent = cfile.Engine.HTTPUserAgent

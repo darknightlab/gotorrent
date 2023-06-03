@@ -9,13 +9,13 @@ Engine:
     UploadRateBurst: 62914560
     UploadRateLimit: 41943040
     ListenPort: 16103
-    UpnpID: 
-    ExtendedHandshakeClientVersion: 
-    Bep20: -qB4530-
+    UpnpID: # 默认为 "github.com/darknightlab/gotorrent (版本号)"
+    ExtendedHandshakeClientVersion: # 默认为 "github.com/darknightlab/gotorrent (版本号)"
+    Bep20: -qB4530- # 默认为 "-GTxxx0"
     DataDir: downloads
     Seed: true
     HTTPUserAgent: qBittorrent/4.5.3
-    DisableIPv6:
+    DisableIPv6: # false
     PublicIp4:
     PublicIp6:
 Main:

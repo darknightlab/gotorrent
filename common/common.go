@@ -6,6 +6,7 @@ import (
 )
 
 const Version = "0.1.2"
+const PeerIDPrefix = "-GT0120-"
 
 func PrintVersion() {
 	log.Printf("gotorrent v%s", Version)
