@@ -12,7 +12,7 @@ example.com {
         respond "" 204
     }
     reverse_proxy {
-        to localhost:16100
+        to localhost:16102
     }
     tls <your email> {
         dns cloudflare <your api token>
