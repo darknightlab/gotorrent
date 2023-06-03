@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/anacrolix/torrent"
@@ -14,6 +15,8 @@ var (
 )
 
 func main() {
+	common.ClientInfo("start gotorrent v" + common.Version)
+
 	var cfile ConfigFile
 	ParseConfig(configPath, &cfile)
 	var cfg Config
@@ -47,8 +50,16 @@ func main() {
 		cfg.Engine.UploadRateLimiter = rate.NewLimiter(rate.Limit(cfile.Engine.UploadRateLimit), cfile.Engine.UploadRateBurst)
 	}
 	cfg.Engine.ListenPort = cfile.Engine.ListenPort
-	cfg.Engine.UpnpID = cfile.Engine.UpnpID
-	cfg.Engine.ExtendedHandshakeClientVersion = cfile.Engine.ExtendedHandshakeClientVersion
+	if cfile.Engine.UpnpID == "" {
+		cfg.Engine.UpnpID = fmt.Sprintf("github.com/darknightlab/gotorrent (%s)", common.Version)
+	} else {
+		cfg.Engine.UpnpID = cfile.Engine.UpnpID
+	}
+	if cfile.Engine.ExtendedHandshakeClientVersion == "" {
+		cfg.Engine.ExtendedHandshakeClientVersion = fmt.Sprintf("github.com/darknightlab/gotorrent (%s)", common.Version)
+	} else {
+		cfg.Engine.ExtendedHandshakeClientVersion = cfile.Engine.ExtendedHandshakeClientVersion
+	}
 	cfg.Engine.Bep20 = cfile.Engine.Bep20
 	cfg.Engine.DataDir = cfile.Engine.DataDir
 	cfg.Engine.Seed = cfile.Engine.Seed
@@ -56,6 +67,9 @@ func main() {
 	cfg.Engine.DisableIPv6 = cfile.Engine.DisableIPv6
 	cfg.Engine.PublicIp4 = net.ParseIP(cfile.Engine.PublicIp4)
 	cfg.Engine.PublicIp6 = net.ParseIP(cfile.Engine.PublicIp6)
+
+	// if cache dir not exist, create it
+	common.CreateDir(cfg.Main.CacheDir)
 	// set default storage, saving sqlite in cache dir
 	pc, err := storage.NewDefaultPieceCompletionForDir(cfg.Main.CacheDir)
 	if err != nil {

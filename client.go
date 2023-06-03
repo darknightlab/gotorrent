@@ -17,8 +17,17 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func IsMagnet(uri string) bool {
+type Client struct {
+	Engine *torrent.Client
+	Web    *iris.Application
+	Config Config
+	Queue  struct {
+		GotInfo    map[string]*torrent.Torrent
+		WaitDelete map[string]*time.Timer
+	}
+}
 
+func IsMagnet(uri string) bool {
 	return (len(uri) > 20 && uri[:20] == "magnet:?xt=urn:btih:")
 }
 
@@ -149,15 +158,7 @@ func (cl *Client) Recover() {
 	}
 }
 
-func (cl *Client) AddTorrentFromFile(file io.Reader) (*torrent.Torrent, error) {
-	m, err := metainfo.Load(file)
-	if err != nil {
-		return nil, err
-	}
-	torr, err := cl.Engine.AddTorrent(m)
-	if err != nil {
-		return nil, err
-	}
+func (cl *Client) SetScheduledDeletion(torr *torrent.Torrent) {
 	// 设置定时删除
 	if cl.Config.Main.MaxSeedTime > 0 {
 		if cl.Queue.WaitDelete[torr.InfoHash().String()] != nil {
@@ -168,6 +169,30 @@ func (cl *Client) AddTorrentFromFile(file io.Reader) (*torrent.Torrent, error) {
 			})
 		}
 	}
+	common.ClientInfo(fmt.Sprintf("it will be deleted at %s", time.Now().Add(time.Second*time.Duration(cl.Config.Main.MaxSeedTime)).Format("2006-01-02 15:04:05")))
+}
+
+func (cl *Client) AddTorrentFromMagnet(uri string) (torr *torrent.Torrent, err error) {
+	torr, err = cl.Engine.AddMagnet(uri)
+	if err != nil {
+		return
+	}
+	// 设置定时删除
+	cl.SetScheduledDeletion(torr)
+	return
+}
+
+func (cl *Client) AddTorrentFromFile(file io.Reader) (*torrent.Torrent, error) {
+	m, err := metainfo.Load(file)
+	if err != nil {
+		return nil, err
+	}
+	torr, err := cl.Engine.AddTorrent(m)
+	if err != nil {
+		return nil, err
+	}
+	// 设置定时删除
+	cl.SetScheduledDeletion(torr)
 	return torr, nil
 }
 
@@ -373,26 +398,17 @@ func (cl *Client) WebAddURI(ctx iris.Context) {
 		return
 	}
 
+	common.ClientInfo(fmt.Sprintf("receive uri: %s", recv.URI))
+
 	var torr *torrent.Torrent
 	if IsMagnet(recv.URI) {
 		var err error
-		torr, err = cl.Engine.AddMagnet(recv.URI)
+		torr, err = cl.AddTorrentFromMagnet(recv.URI)
 		if err != nil {
 			ctx.JSON(map[string]interface{}{"response": 400, "info": err.Error()})
 			common.UserPanic(err.Error())
 			return
 		}
-		// 设置定时删除
-		if cl.Config.Main.MaxSeedTime > 0 {
-			if cl.Queue.WaitDelete[torr.InfoHash().String()] != nil {
-				cl.Queue.WaitDelete[torr.InfoHash().String()].Reset(time.Second * time.Duration(cl.Config.Main.MaxSeedTime))
-			} else {
-				cl.Queue.WaitDelete[torr.InfoHash().String()] = time.AfterFunc(time.Second*time.Duration(cl.Config.Main.MaxSeedTime), func() {
-					cl.DeleteTorrent(torr.InfoHash().String(), true)
-				})
-			}
-		}
-
 	} else {
 		resp, err := http.Get(recv.URI)
 		if err != nil {
@@ -407,8 +423,6 @@ func (cl *Client) WebAddURI(ctx iris.Context) {
 			return
 		}
 	}
-
-	common.ClientInfo(fmt.Sprintf("receive uri: %s", recv.URI))
 
 	cl.Queue.GotInfo[torr.InfoHash().String()] = torr
 	select {

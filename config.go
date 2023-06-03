@@ -2,11 +2,9 @@ package main
 
 import (
 	"io/ioutil"
-	"time"
 
 	"github.com/anacrolix/torrent"
 	"github.com/darknightlab/gotorrent/common"
-	"github.com/kataras/iris/v12"
 	"gopkg.in/yaml.v3"
 )
 
@@ -44,16 +42,6 @@ type ConfigFile struct {
 		PublicIp6                      string  `yaml:"PublicIp6"`
 	} `yaml:"Engine"`
 	Main MainConfig `yaml:"Main"`
-}
-
-type Client struct {
-	Engine *torrent.Client
-	Web    *iris.Application
-	Config Config
-	Queue  struct {
-		GotInfo    map[string]*torrent.Torrent
-		WaitDelete map[string]*time.Timer
-	}
 }
 
 type Config struct {

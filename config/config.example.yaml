@@ -9,12 +9,12 @@ Engine:
     UploadRateBurst: 62914560
     UploadRateLimit: 41943040
     ListenPort: 16103
-    UpnpID: github.com/darknightlab/gotorrent (0.0.11)
-    ExtendedHandshakeClientVersion: github.com/darknightlab/gotorrent (0.0.11)
-    Bep20: -qB4500-
+    UpnpID: 
+    ExtendedHandshakeClientVersion: 
+    Bep20: -qB4530-
     DataDir: downloads
     Seed: true
-    HTTPUserAgent: qBittorrent/4.5.0
+    HTTPUserAgent: qBittorrent/4.5.3
     DisableIPv6:
     PublicIp4:
     PublicIp6:
@@ -27,6 +27,6 @@ Main:
     DefaultTracker:
         - ["udp://tracker.opentrackr.org:1337/announce"]
         - ["https://tracker.lilithraws.org:443/announce"]
-        - ["wss://tracker.lili.ac"]
+        - ["wss://tracker.kawaii.id"]
         - ["wss://tracker.btorrent.xyz"]
         - ["wss://tracker.openwebtorrent.com"]
