@@ -169,7 +169,7 @@ func (cl *Client) SetScheduledDeletion(torr *torrent.Torrent) {
 			})
 		}
 	}
-	common.ClientInfo(fmt.Sprintf("it will be deleted at %s", time.Now().Add(time.Second*time.Duration(cl.Config.Main.MaxSeedTime)).Format("2006-01-02 15:04:05")))
+	common.ClientInfo(fmt.Sprintf("it will be deleted at %s", time.Now().Local().Add(time.Second*time.Duration(cl.Config.Main.MaxSeedTime)).Format("2006-01-02 15:04:05")))
 }
 
 func (cl *Client) AddTorrentFromMagnet(uri string) (torr *torrent.Torrent, err error) {
