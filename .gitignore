@@ -1,7 +1,6 @@
 .vscode/
 cache/
 downloads/
-html/
 build/
 gotorrent
 *.exe

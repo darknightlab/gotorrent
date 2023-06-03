@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const Version = "0.1.1"
+const Version = "0.1.2"
 
 func PrintVersion() {
 	log.Printf("gotorrent v%s", Version)
