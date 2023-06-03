@@ -144,16 +144,16 @@ func (cl *Client) Recover() {
 	d, _ := ioutil.ReadDir(cl.Config.Main.CacheDir)
 	for _, f := range d {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), cl.Config.Main.CachePrefix) {
+			common.ClientInfo(fmt.Sprintf("add %s", f.Name()))
 			torr, err := cl.AddTorrentFromFilePath(filepath.Join(cl.Config.Main.CacheDir, f.Name()))
 			if err != nil {
-				common.ClientError(fmt.Errorf("add %s", f.Name()))
+				common.ClientError(fmt.Errorf("failed to add %s, %s", f.Name(), err.Error()))
 				continue
 			}
 			if f.Name() != fmt.Sprintf("%s%s.torrent", cl.Config.Main.CachePrefix, torr.InfoHash().String()) {
 				common.ClientError(fmt.Errorf("%s hash dismatch", f.Name()))
 			}
 			torr.DownloadAll()
-			common.ClientInfo(fmt.Sprintf("add %s", f.Name()))
 		}
 	}
 }
